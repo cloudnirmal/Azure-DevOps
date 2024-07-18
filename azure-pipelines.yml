@@ -1,0 +1,15 @@
+trigger:
+  branches:
+    include:
+    - main
+    exclude:
+    - feature_branches
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+jobs:
+- job: File_system
+  steps:
+  - script: df -h
+    displayName: "Print file-system details"
