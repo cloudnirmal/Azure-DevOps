@@ -21,28 +21,28 @@ stages:
       displayName: Extracting files
       inputs:
         archiveFilePatterns: '$(Build.ArtifactStagingDirectory)/**/*.zip'
-        destinationFolder: '$(System.DefaultWorkingDirectory)/Day8-infra-CICD/'
+        destinationFolder: '$(System.DefaultWorkingDirectory)/Infra-CICD-Terraform/TF-Files/'
         overwriteExistingFiles: true
         cleanDestinationFolder: true
     
     - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV4@4
       displayName: 'Terraform : Init'
       inputs:
-        workingDirectory: '$(System.DefaultWorkingDirectory)/Day8-infra-CICD/'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/Infra-CICD-Terraform/TF-Files/'
         backendAzureRmUseEnvironmentVariablesForAuthentication: false
         backendAzureRmUseEntraIdForAuthentication: false
-        backendServiceArm: 'Free Trial(d2957eb3-fd59-4c17-8afa-64a3da1a3093)'
-        backendAzureRmResourceGroupName: 'azure-devops-learning'
-        backendAzureRmStorageAccountName: azuredevopsnirmal
-        backendAzureRmContainerName: picicdtfstate
-        backendAzureRmKey: dev.terraform.tfstate
+        backendServiceArm: 'Add_here' # replace your Azure_service_connection details in the place of Add_here
+        backendAzureRmResourceGroupName: 'Add_here' # replace your Azure_resource_group details in the place of Add_here
+        backendAzureRmStorageAccountName: 'Add_here' # replace your Azure_storage_account details in the place of Add_here
+        backendAzureRmContainerName: 'Add_here' # replace your Azure_container details in the place of Add_here
+        backendAzureRmKey: 'Add_here' # replace your Azure_backend_tfstate_file  details in the place of Add_here
 
     - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV4@4
       displayName: 'Terraform : Apply'
       inputs:
         command: apply
-        workingDirectory: '$(System.DefaultWorkingDirectory)/Day8-infra-CICD/'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/Infra-CICD-Terraform/TF-Files/'
         commandOptions: '--auto-approve'
-        environmentServiceNameAzureRM: 'Free Trial(d2957eb3-fd59-4c17-8afa-64a3da1a3093)'
+        environmentServiceNameAzureRM: 'Add_here' # replace your Azure_service_connection details in the place of Add_here
         backendAzureRmUseEnvironmentVariablesForAuthentication: false
         backendAzureRmUseEntraIdForAuthentication: false
