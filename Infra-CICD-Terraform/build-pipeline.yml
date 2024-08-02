@@ -1,0 +1,95 @@
+
+
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+    pool:
+     vmImage: 'ubuntu-latest'
+    steps:
+    - task: TerraformTaskV4@4
+      displayName: Terraform init 
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        backendServiceArm: 'Free Trial(d2957eb3-fd59-4c17-8afa-64a3da1a3093)'
+        backendAzureRmResourceGroupName: 'azure-devops-learning'
+        backendAzureRmStorageAccountName: 'azuredevopsnirmal'
+        backendAzureRmContainerName: 'picicdtfstate'
+        backendAzureRmKey: 'dev.terraform.tfstate'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/Day8-infra-CICD'
+    
+    - task: tfsec@1
+      displayName: Terraform Scan
+      continueOnError: true
+      inputs:
+        version: 'v1.26.0'
+        dir: '$(System.DefaultWorkingDirectory)/Day8-infra-CICD'
+            
+    - bash: | 
+        cp /tmp/tfsec-results-0*.* $(Build.SourcesDirectory)/Day8-infra-CICD/
+        cd $(Build.SourcesDirectory)/Day8-infra-CICD/
+        pwd
+        ls -ltr
+        cat $(Build.SourcesDirectory)/Day8-infra-CICD/tfsec-results-0*.json | jq
+        cat $(Build.SourcesDirectory)/Day8-infra-CICD/tfsec-results-0*.junit
+      displayName: Copying TFsec output
+        
+    - task: TerraformTaskV4@4
+      displayName: Terraform validate
+      inputs:
+        provider: 'azurerm'
+        command: 'validate'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/Day8-infra-CICD'
+    
+    - task: TerraformTaskV4@4
+      displayName: Terraform format
+      inputs:
+        provider: 'azurerm'
+        command: 'custom'
+        outputTo: 'console'
+        customCommand: 'fmt'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/Day8-infra-CICD'
+        environmentServiceNameAzureRM: 'Free Trial(d2957eb3-fd59-4c17-8afa-64a3da1a3093)'
+    
+    - task: TerraformTaskV4@4
+      displayName: Terraform plan
+      inputs:
+        provider: 'azurerm'
+        command: 'plan'
+        commandOptions: '-out $(Build.SourcesDirectory)/Day8-infra-CICD/tfplanfile'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/Day8-infra-CICD'
+        environmentServiceNameAzureRM: 'Free Trial(d2957eb3-fd59-4c17-8afa-64a3da1a3093)'
+    
+    - task: InfracostSetup@2
+      displayName: Infra cost Install
+      inputs:
+        apiKey: $(INFRACOST_API_KEY)
+        version: '0.10.x'
+        currency: 'INR'
+        
+    - bash: |
+        cd $(System.DefaultWorkingDirectory)/Day8-infra-CICD
+        infracost breakdown --path . \
+              --format=table \
+              --out-file=$(Build.SourcesDirectory)/Day8-infra-CICD/infracost-base.json
+        cat $(Build.SourcesDirectory)/Day8-infra-CICD/infracost-base.json
+      displayName: Generate Infracost cost estimate baseline
+
+    - task: ArchiveFiles@2
+      displayName: Archive Files
+      inputs:
+        rootFolderOrFile: '$(Build.SourcesDirectory)/Day8-infra-CICD/'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+        replaceExistingArchive: true
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: '$(Build.BuildId)-buildid'
+        publishLocation: 'Container'
+    
+    
+    

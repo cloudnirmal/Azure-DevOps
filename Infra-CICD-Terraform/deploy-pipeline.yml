@@ -1,0 +1,48 @@
+    
+
+stages:
+- stage: 
+  jobs:
+  - job: Deploy
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: DownloadBuildArtifacts@1
+      displayName: 'Download Build Arifacts'
+      inputs:
+        buildType: specific
+        project: PI-INFRA
+        pipeline: Infra_Build
+        downloadType: specific
+        artifactName: '$(Build.BuildId)-buildid'
+        extractTars: false
+        
+    - task: ExtractFiles@1
+      displayName: Extracting files
+      inputs:
+        archiveFilePatterns: '$(Build.ArtifactStagingDirectory)/**/*.zip'
+        destinationFolder: '$(System.DefaultWorkingDirectory)/Day8-infra-CICD/'
+        overwriteExistingFiles: true
+        cleanDestinationFolder: true
+    
+    - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV4@4
+      displayName: 'Terraform : Init'
+      inputs:
+        workingDirectory: '$(System.DefaultWorkingDirectory)/Day8-infra-CICD/'
+        backendAzureRmUseEnvironmentVariablesForAuthentication: false
+        backendAzureRmUseEntraIdForAuthentication: false
+        backendServiceArm: 'Free Trial(d2957eb3-fd59-4c17-8afa-64a3da1a3093)'
+        backendAzureRmResourceGroupName: 'azure-devops-learning'
+        backendAzureRmStorageAccountName: azuredevopsnirmal
+        backendAzureRmContainerName: picicdtfstate
+        backendAzureRmKey: dev.terraform.tfstate
+
+    - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV4@4
+      displayName: 'Terraform : Apply'
+      inputs:
+        command: apply
+        workingDirectory: '$(System.DefaultWorkingDirectory)/Day8-infra-CICD/'
+        commandOptions: '--auto-approve'
+        environmentServiceNameAzureRM: 'Free Trial(d2957eb3-fd59-4c17-8afa-64a3da1a3093)'
+        backendAzureRmUseEnvironmentVariablesForAuthentication: false
+        backendAzureRmUseEntraIdForAuthentication: false
