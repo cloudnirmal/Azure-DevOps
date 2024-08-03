@@ -8,7 +8,7 @@
 5. Infracost subscription (optional). [here] (https://www.infracost.io/) and set the pipeline variables as specified below,
 ![image](https://github.com/user-attachments/assets/928becf8-e628-4974-9525-3a3aeec338f8)
 
-**Build Pipeline - Workflow - Manual Trigger**
+<ins>**Build Pipeline - Workflow - Manual Trigger**</ins>
 
 1. Terraform
 Init Right &rarr; Scan Code & copy (optional)  Validate &rarr; Format &rarr; Plan &rarr; Estimate Cost and copy (optional)
