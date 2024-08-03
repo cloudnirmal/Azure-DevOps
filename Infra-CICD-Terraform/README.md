@@ -11,24 +11,24 @@
 **Build Pipeline - Workflow - Manual Trigger**
 
 1. Terraform
-Init Right &rarr; Scan Code & copy (optional)  Validate --> Format --> Plan --> Estimate Cost and copy (optional)
+Init Right &rarr; Scan Code & copy (optional)  Validate &rarr; Format &rarr; Plan &rarr; Estimate Cost and copy (optional)
 
 2. File Management
-Archive Build Files --> Publish Build Artifacts
+Archive Build Files &rarr; Publish Build Artifacts
 
 **Deploy Pipeline - Workflow - Manual Trigger**
 
 1. File Management
-Download Build Artifacts --> Extract Files
+Download Build Artifacts &rarr; Extract Files
 
 2. Terraform
-Init --> Apply (Plan file from Build Pipeline)
+Init &rarr; Apply (Plan file from Build Pipeline)
 
 **Destroy Pipeline - Workflow - Manual Trigger**
 
 1. File Management
-Downolad Build Artifacts --> Extract Files
+Downolad Build Artifacts &rarr; Extract Files
 
 2. Terraform
-Init --> Destroy (Plan file from Build Pipeline)
+Init &rarr; Destroy (Plan file from Build Pipeline)
 
