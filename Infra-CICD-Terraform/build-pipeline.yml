@@ -7,7 +7,7 @@ stages:
     pool:
      vmImage: 'ubuntu-latest'
     steps:
-    - task: TerraformTaskV4@4
+    - task: TerraformTaskV4@4 ## Task to init Terraform
       displayName: Terraform init 
       inputs:
         provider: 'azurerm'
@@ -19,14 +19,14 @@ stages:
         backendAzureRmKey: 'Add_here' # replace your Azure_backend_tfstate_file  details in the place of Add_here
         workingDirectory: '$(System.DefaultWorkingDirectory)/Infra-CICD-Terraform/TF-Files'
     
-    - task: tfsec@1
+    - task: tfsec@1 ## Task to scan the terraform code for configuration errors - remove this block if not needed
       displayName: Terraform Scan
-      continueOnError: true
+      continueOnError: false # set this to true if you want to continue to next tasks 
       inputs:
         version: 'v1.26.0'
         dir: '$(System.DefaultWorkingDirectory)/Infra-CICD-Terraform/TF-Files'
             
-    - bash: | 
+    - bash: | ## bash commands to read and copy the files to build artifacts - remove this block if not needed.
         cp /tmp/tfsec-results-0*.* $(Build.SourcesDirectory)/Infra-CICD-Terraform/TF-Files/
         cd $(Build.SourcesDirectory)/Day8-infra-CICD/
         pwd
@@ -35,14 +35,14 @@ stages:
         cat $(Build.SourcesDirectory)/Infra-CICD-Terraform/TF-Files/tfsec-results-0*.junit
       displayName: Copying TFsec output
         
-    - task: TerraformTaskV4@4
+    - task: TerraformTaskV4@4 ## Task to validate the terraform code.
       displayName: Terraform validate
       inputs:
         provider: 'azurerm'
         command: 'validate'
         workingDirectory: '$(System.DefaultWorkingDirectory)/Infra-CICD-Terraform/TF-Files'
     
-    - task: TerraformTaskV4@4
+    - task: TerraformTaskV4@4 ## Task to validate the terraform code.
       displayName: Terraform format
       inputs:
         provider: 'azurerm'
@@ -52,7 +52,7 @@ stages:
         workingDirectory: '$(System.DefaultWorkingDirectory)/Infra-CICD-Terraform/TF-Files'
         environmentServiceNameAzureRM: 'Add_here' # replace your Azure_service_connection details in the place of Add_here
     
-    - task: TerraformTaskV4@4
+    - task: TerraformTaskV4@4 ## Task to plan the terraform code and produce it in a file.
       displayName: Terraform plan
       inputs:
         provider: 'azurerm'
@@ -61,14 +61,14 @@ stages:
         workingDirectory: '$(System.DefaultWorkingDirectory)/Infra-CICD-Terraform/TF-Files'
         environmentServiceNameAzureRM: 'Add_here' # replace your Azure_service_connection details in the place of Add_here
     
-    - task: InfracostSetup@2
+    - task: InfracostSetup@2 ## Task to estimate the cloud costs - ignore this block if not needed
       displayName: Infra cost Install
       inputs:
         apiKey: $(INFRACOST_API_KEY) # Add your api key for the Infracost connection
         version: '0.10.x'
         currency: 'INR'
         
-    - bash: |
+    - bash: | ## bash commands to generate table format cost output file in build artifacts
         cd $(System.DefaultWorkingDirectory)/Infra-CICD-Terraform/TF-Files
         infracost breakdown --path . \
               --format=table \
@@ -76,7 +76,7 @@ stages:
         cat $(Build.SourcesDirectory)/Infra-CICD-Terraform/TF-Files/infracost-base.json
       displayName: Generate Infracost cost estimate baseline
 
-    - task: ArchiveFiles@2
+    - task: ArchiveFiles@2 ## Task to archive the build artifact files
       displayName: Archive Files
       inputs:
         rootFolderOrFile: '$(Build.SourcesDirectory)/Infra-CICD-Terraform/TF-Files/'
@@ -85,7 +85,7 @@ stages:
         archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
         replaceExistingArchive: true
 
-    - task: PublishBuildArtifacts@1
+    - task: PublishBuildArtifacts@1 ## Task to pubish the build artifact in the Azure pipeline.
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: '$(Build.BuildId)-buildid'
