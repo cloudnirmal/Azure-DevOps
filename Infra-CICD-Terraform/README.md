@@ -11,7 +11,7 @@
 **Build Pipeline - Workflow - Manual Trigger**
 
 1. Terraform
-Init --> Scan Code & copy (optional) --> Validate --> Format --> Plan --> Estimate Cost and copy (optional)
+Init Right &rarr; Scan Code & copy (optional)  Validate --> Format --> Plan --> Estimate Cost and copy (optional)
 
 2. File Management
 Archive Build Files --> Publish Build Artifacts
