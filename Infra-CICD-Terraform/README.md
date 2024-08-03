@@ -16,7 +16,7 @@ Init Right &rarr; Scan Code & copy (optional)  Validate &rarr; Format &rarr; Pla
 2. File Management
 Archive Build Files &rarr; Publish Build Artifacts
 
-**Deploy Pipeline - Workflow - Manual Trigger**
+<ins>**Deploy Pipeline - Workflow - Manual Trigger**</ins>
 
 1. File Management
 Download Build Artifacts &rarr; Extract Files
@@ -24,7 +24,7 @@ Download Build Artifacts &rarr; Extract Files
 2. Terraform
 Init &rarr; Apply (Plan file from Build Pipeline)
 
-**Destroy Pipeline - Workflow - Manual Trigger**
+<ins>**Destroy Pipeline - Workflow - Manual Trigger**</ins>
 
 1. File Management
 Downolad Build Artifacts &rarr; Extract Files
