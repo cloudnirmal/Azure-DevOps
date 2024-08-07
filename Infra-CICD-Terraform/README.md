@@ -10,25 +10,25 @@
 
 <ins>**Build Pipeline - Workflow - Manual Trigger**</ins>
 
-1. Terraform
+1. Terraform : 
 Init &rarr; Scan Code & copy (optional)  Validate &rarr; Format &rarr; Plan &rarr; Estimate Cost and copy (optional)
 
-2. File Management
+2. File Management : 
 Archive Build Files &rarr; Publish Build Artifacts
 
 <ins>**Deploy Pipeline - Workflow - Manual Trigger**</ins>
 
-1. File Management
+1. File Management : 
 Download Build Artifacts &rarr; Extract Files
 
-2. Terraform
+2. Terraform : 
 Init &rarr; Apply (Plan file from Build Pipeline)
 
 <ins>**Destroy Pipeline - Workflow - Manual Trigger**</ins>
 
-1. File Management
+1. File Management : 
 Downolad Build Artifacts &rarr; Extract Files
 
-2. Terraform
+2. Terraform : 
 Init &rarr; Destroy (Plan file from Build Pipeline)
 
